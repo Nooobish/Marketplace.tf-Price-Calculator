@@ -1,24 +1,25 @@
 // ==UserScript==
 // @name         Marketplace.tf Price Calculator
 // @namespace    https://github.com/NetroScript
-// @version      0.2
+// @version      0.3
 // @description  A simple price Calculator on the dashboard page so you know for how much you have to sell an item if you want a specific amount of keys or how many keys you get for an specific price (Also works with just calculating the store commission).
 // @author       Netroscript
 // @match        https://marketplace.tf/dashboard
 // @match        http://marketplace.tf/dashboard
 // @require      code.jquery.com/jquery-latest.js
+// @downloadURL  https://github.com/NetroScript/Marketplace.tf-Price-Calculator/raw/master/Marketplace.tf%20Price%20Calculator.user.js
+// @updateURL    https://github.com/NetroScript/Marketplace.tf-Price-Calculator/raw/master/Marketplace.tf%20Price%20Calculator.meta.js
 // @run-at       document-end
 // @grant        none
 // ==/UserScript==
 
 (function() {
-    'use strict';
+  'use strict';
 
-	let storepart = 1 - (Number($(".dashboard-commission-pct").text().split("%")[0]))/100; //How much of your item you actually get (currently 10% get subtracted -> 90% are for you)
+  let storepart = 1 - (Number($(".dashboard-commission-pct").text().split("%")[0])) / 100; //How much of your item you actually get (currently 10% get subtracted -> 90% are for you)
 
-
-	//Custom CSS
-	let css = `<style>
+  //Custom CSS
+  let css = `<style>
 .dollar {
     display: inline-block;
     position: absolute;
@@ -43,8 +44,8 @@ font-weight: bold;
 }
 </style>`;
 
-	//The HTML which gets added
-	let html = `<div class="panel panel-info">
+  //The HTML which gets added
+  let html = `<div class="panel panel-info">
     <div class="panel-heading">Price Calculator</div>
     <table class="table table-bordered">
         <tbody>
@@ -85,42 +86,47 @@ font-weight: bold;
     </div>
 </div>`;
 
+  //Adding HTML to main container and CSS to head
+  $($(".panel.panel-info.dashboard-panel")[0]).parent().parent().prepend(html);
+  $("head").append(css);
 
-	//Adding HTML to main container and CSS to head
-	$($(".panel.panel-info.dashboard-panel")[0]).parent().parent().prepend(html);
-	$("head").append(css);
+  //All Javascript functionality here
+  function main() {
+    $("#getPfK").click(function() {
 
+      let keyprice = parseFloat($("#keyprice").val());
+      let amount = parseFloat($("#wkeys").val());
+      let Price4Key = (amount * keyprice) / storepart;
 
-	//All Javascript functionality here
-	function main(){
-		$("#getPfK").click(function(){
+      $("#output").html("For this amount of keys you would need at least " + Price4Key.toFixed(2) + '$ (~' + (
+      Math.ceil(Price4Key * 10) / 10).toFixed(2) + '$). <span class="tip">(Store Commission already included)</span>');
 
-			let keyprice = parseFloat($("#keyprice").val());
-			let amount = parseFloat($("#wkeys").val());
-			let Price4Key = (amount * keyprice) / storepart;
+    });
 
+    $("#getKfP").click(function() {
 
-			$("#output").html("For this amount of keys you would need at least " + Price4Key.toFixed(2) + '$ (~'+(Math.ceil(Price4Key*10)/10).toFixed(2)+'$). <span class="tip">(Store Commission already included)</span>');
+      let keyprice = parseFloat($("#keyprice").val());
+      let money = parseFloat($("#wprice").val());
+      let Key4Price = (money * storepart) / keyprice;
 
-		});
+      $("#output").html("For this money you could get " + Key4Price.toFixed(2) + ' Key' + (
+        (Key4Price > 1 || Key4Price === 0)
+        ? "s"
+        : "") + ' (~' + Math.floor(Key4Price) + ' Key' + (
+        (Math.floor(Key4Price) > 1 || Math.floor(Key4Price) === 0)
+        ? "s"
+        : "") + '). <span class="tip">(Store Commission already included)</span>');
 
+    });
 
-		$("#getKfP").click(function(){
+  }
 
-			let keyprice = parseFloat($("#keyprice").val());
-			let money = parseFloat($("#wprice").val());
-			let Key4Price = (money * storepart) / keyprice;
+  //Execute Main function with slight delay which the adding to Document might need
+  setTimeout(main, 250);
 
+  //Replace Timestamps with the local Timestamp
+  document.body.innerHTML = document.body.innerHTML.replace(/[\d]{0,2} [\w]+, \d\d\d\d [\d]{0,2}:[\d]{0,2}(:[\d]{0,2})? ?(AM|PM?)?/g, function(match, capture) {
+    return new Date(match + " GMT-0400").toLocaleString();
+  });
 
-			$("#output").html("For this money you could get " + Key4Price.toFixed(2) + ' Key'+((Key4Price>1 || Key4Price === 0) ? "s" : "") +' (~'+Math.floor(Key4Price)+' Key'+((Math.floor(Key4Price)>1 || Math.floor(Key4Price) === 0) ? "s" : "") +'). <span class="tip">(Store Commission already included)</span>');
-
-		});
-
-	}
-
-	//Execute Main function with slight delay which the adding to Document might need
-	setTimeout(main, 250);
-
-
-    // Your code here...
 })();
