@@ -13,6 +13,13 @@ and then install using this link: [Marketplace.tf Price Calculator.user.js](http
 _____________________________________________
 
 
+### 0.3.1
+
+Fixed:
+* Timestamp not working on all pages
+* Events no longer get removed 
+
+
 ### 0.3
 
 Added:
