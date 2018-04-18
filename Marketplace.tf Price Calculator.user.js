@@ -16,7 +16,7 @@
 (function() {
   'use strict';
 
-  if(window.location.pathname = "/dashboard"){
+  if(window.location.pathname == "/dashboard"){
 
     let storepart = 1 - (Number($(".dashboard-commission-pct").text().split("%")[0])) / 100; //How much of your item you actually get (currently 10% get subtracted -> 90% are for you)
 
